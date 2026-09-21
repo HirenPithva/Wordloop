@@ -15,6 +15,20 @@ jobs:
       - name: Unzip project
         run: unzip -o WordLoop-phase1-1.zip
 
+      - name: Patch for AGP 9 built-in Kotlin
+        run: |
+          cd WordLoop
+          sed -i '/alias(libs\.plugins\.kotlin\.android)/d' build.gradle.kts app/build.gradle.kts
+          sed -i '/kotlinOptions {/,/^    }/d' app/build.gradle.kts
+          cat >> app/build.gradle.kts << 'PATCH'
+
+          kotlin {
+              compilerOptions {
+                  jvmTarget = org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_17
+              }
+          }
+          PATCH
+
       - name: Set up JDK 17
         uses: actions/setup-java@v4
         with:
@@ -41,9 +55,4 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: wordloop-debug-apk
-          path: WordLoop/app/build/outputs/apk/debug/app-debug.apk
-      - name: Upload APK
-        uses: actions/upload-artifact@v4
-        with:
-          name: wordloop-debug-apk
-          path: WordLoop/app/build/outputs/apk/debug/app-debug.apk
+          path: WordLoop/app/build/outputs/apk/debug/app-debug.apk. 
